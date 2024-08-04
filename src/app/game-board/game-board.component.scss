@@ -1,0 +1,77 @@
+$primaryColor: #6B8F71;
+$secondaryColor: #EDFBC1;
+
+@mixin flexBox($dir:row,$justify:space-around){
+    display: flex;
+    flex-direction: $dir;
+    justify-content: $justify;
+    align-items: center;
+}
+
+.button-defaults{
+    font-size: 16px;
+    border-radius: 16px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.board-container{
+    @include flexBox(column);
+    height: 97dvh;
+}
+.primary-button{
+    @extend .button-defaults;
+    background-color: $primaryColor;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 11px 50px;
+}
+.button-group-container{
+    @include flexBox(row,space-between);
+    background-color: $secondaryColor;
+    @extend .button-defaults;
+    width:25dvw;
+    cursor: pointer;
+}
+.member{
+    padding: 11px 75px;
+}
+.selected-button{
+    background-color: $primaryColor;
+    color: #ffffff;
+    border-radius: 16px;
+}
+.center-block-container{
+    display: flex;
+    flex-direction: row;
+}
+.eval-bar{
+    background-image: url("../../assets/icons/eval-bar.svg");
+    width: 25px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    align-self: center;
+    height: calc(98dvh * 0.8);
+}
+.eval-pointer{
+    background-image: url("../../assets/icons/eval-point.svg");
+    height: 30px;
+    width: 30px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    align-self: center;
+    position: relative;
+    right: 13px;
+    transition-property: top;
+    transition-duration: 1s;
+    transition-timing-function:cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.eval-container{
+    display: flex;
+    margin-left: 3%;
+}
+.eval-points{
+    position: absolute;
+    top: 6%;
+    font-size: 24px;
+    margin-left: -1%;
+}

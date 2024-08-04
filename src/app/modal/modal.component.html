@@ -1,0 +1,12 @@
+<div class="modal-container" *ngIf="showModal" (click)="gameEnd()">
+    <div class="dialog-conntainer">
+        <div class="modal-heading-container">
+            <span class="modal-heading">Game Over</span>
+        </div>
+        <div class="result-container">
+            <span class="whiteKing" *ngIf="isWhite"></span>
+            <span class="blackKing" *ngIf="!isWhite"></span>
+            <span class="result-string">{{resultString}}</span>
+        </div>
+    </div>
+</div>

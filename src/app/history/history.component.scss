@@ -1,0 +1,35 @@
+$primaryColor: #6B8F71;
+$secondaryColor: #EDFBC1;
+
+@mixin flexBox($dir:row,$justify:space-around){
+    display: flex;
+    flex-direction: $dir;
+    justify-content: $justify;
+    align-items: center;
+}
+
+.history-container{
+    @include flexBox(column,start);
+    height: 100dvh;
+    background-color: #6B8F71;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 12dvw;
+    padding: 15px
+}
+.history-row{
+    @include flexBox();
+    font-size: 20px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+.history-entry{
+    @include flexBox(row, center);
+    background-color: $secondaryColor;
+    width: 37%;
+    height: 42px;
+}
+.align-index{
+    margin-left: -10px;
+}

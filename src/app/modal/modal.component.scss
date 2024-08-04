@@ -1,0 +1,59 @@
+.modal-container{
+    background-color: rgba(217, 217, 217, 0.65);
+    width: 100dvw;
+    height: 100dvh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    z-index: 1000;
+}
+.dialog-conntainer{
+    background-color: #fff;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    border-radius: 10px;
+    padding: 15px 45px 45px 45px;
+}
+.modal-heading-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(217, 217, 217);
+}
+.result-container{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    margin-top: 10px;
+}
+.modal-heading{
+    text-align: center;
+    font-size: 36px;
+    font-weight: 600;
+}
+.blackKing{
+    background-image: url("../../assets/icons/Chess_kdt45.svg.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    align-self: center;
+    height: 100px;
+    width: 100px;
+}
+.whiteKing{
+    background-image: url("../../assets/icons/Chess_klt45.svg.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100px;
+    width: 100px;
+    align-self: center;
+}
+.result-string{
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+}

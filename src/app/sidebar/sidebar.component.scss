@@ -1,0 +1,13 @@
+.sidebar-container{
+    position: absolute;
+    top: 3%;
+    left: 2%;
+}
+.menu-icon{
+    background-image: url("../../assets/icons/menu-icon.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}

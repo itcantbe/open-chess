@@ -1,0 +1,9 @@
+<div class="history-container">
+    @for (move of history; track history;; let index = $index){
+    <div class="history-row">
+            <span class="white-text" [class.align-index]="index > 8">{{ (index + 1) }}.</span>
+            <div class="history-entry">{{move.white}}</div>
+            <div class="history-entry">{{move.black}}</div>
+        </div>
+    }
+</div>

@@ -1,0 +1,34 @@
+<div class="board-container" #container>
+
+    <div class="button-group-container">
+        <div class="member" [class.selected-button]="selectedMode === 0" (click)="changeMode(0)">Two Player</div>
+        <div class="member" [class.selected-button]="selectedMode === 1" (click)="changeMode(1)">VS Computer</div>
+    </div>
+
+    <div class="center-block-container">
+        <ngx-chess-board 
+            #board
+            [size]="setting['size']"
+            [lightTileColor]="setting['lightTileColor']"
+            [darkTileColor]="setting['darkTileColor']"
+            [pieceIcons]="setting['pieceIcons']"
+            [showActivePiece]="setting['showActivePiece']"
+            [showPossibleCaptures]="setting['showPossibleCaptures']"
+            [sourcePointColor]=""
+            [destinationPointColor]=""
+            (moveChange)="logEvent($event)"
+            >
+        </ngx-chess-board>
+        <div class="eval-container">
+            <span class="eval-points">{{evalValue}}</span>
+            <span class="eval-bar"></span>
+            <span class="eval-pointer"[style.top]="evalPointerPosition()"></span>
+        </div>
+    </div>
+
+<div class="">
+    <button class="primary-button" (click)="reset()">Reset</button>
+</div>
+<app-modal *ngIf="showModal" [showModal]="showModal" [isWhite]="isWhite" [isWin]="isWin" (gameOver)="reset()"></app-modal>
+</div>
+<!-- [destinationPointColor]="setting['destinationPointColor']" -->
