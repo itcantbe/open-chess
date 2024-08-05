@@ -1,3 +1,12 @@
+$primaryColor: #6B8F71;
+$secondaryColor: #EDFBC1;
+
+@mixin flexBox($dir:row,$justify:space-around){
+    display: flex;
+    flex-direction: $dir;
+    justify-content: $justify;
+    align-items: center;
+}
 .sidebar-container{
     position: absolute;
     top: 3%;
@@ -10,4 +19,60 @@
     height: 30px;
     width: 30px;
     cursor: pointer;
+}
+.sidebarmenu-container{
+    @include flexBox(column,start);
+    height: 100dvh;
+    background-color: $primaryColor;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 17dvw;
+}
+.sidebarmenu-icon{
+    background-image: url("../../assets/icons/icon-menu-item.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+.sidebarmenu-text{
+    color: #FFFFFF;
+    font-size: 28;
+}
+.sidebarmenu-heading{
+    color: #FFFFFF;
+    font-size: 40px;
+    width: 100%;
+    padding: 25px 0px;
+    margin-left: 35px;
+}
+.item-container{
+    display: flex;
+    flex-direction: row;
+    margin-left: 35px;
+    margin-bottom: 40px;
+    width: 100%;
+    align-items: center;
+}
+.botton-border-line{
+    border-bottom:1px solid #00000050;
+    width: 100%;
+    margin-bottom: 30px;
+}
+.close-history{
+    background-image: url('../../assets/icons/closeHistory.svg');
+    width: 50px;
+    height: 105px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    align-self: center;
+    display: flex;
+    position: absolute;
+    left: 17dvw;
+    top: 0px;
+    cursor: pointer;
+    transform: rotateY(180deg)
 }

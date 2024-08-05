@@ -24,6 +24,7 @@ $secondaryColor: #EDFBC1;
     color: #ffffff;
     cursor: pointer;
     padding: 11px 50px;
+    margin-right: 1dvw;
 }
 .button-group-container{
     @include flexBox(row,space-between);

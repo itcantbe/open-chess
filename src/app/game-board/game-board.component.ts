@@ -16,6 +16,7 @@ import { distinctUntilChanged, tap } from 'rxjs';
 export class GameBoardComponent implements OnInit, AfterViewInit{
 
   @ViewChild('board', {static: false}) board!: NgxChessBoardView;
+  @ViewChild('board', {static: false}) boardRef! : any;
   @ViewChild('container', {static: false}) container! : HTMLDivElement;
 
   public selectedMode = 0;
@@ -77,7 +78,11 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
     this.stockFishService._recommendation$.pipe(
       distinctUntilChanged(),
       tap((value)=>{
-        this.recomendation = value;
+        if(value){
+          this.recomendation = value.match(/(bestmove) ([a-g][1-8])([a-g][1-8])?/);
+          this.board.drawArrowFromCoords(this.recomendation[2],this.recomendation[3],this.boardRef.boardRef.nativeElement.getBoundingClientRect().left,this.boardRef.boardRef.nativeElement.getBoundingClientRect().top)
+          console.log(this.recomendation)
+        }
       })
      ).subscribe();
      this.stockFishService._evaluation$.pipe(

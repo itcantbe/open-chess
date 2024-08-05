@@ -10,13 +10,21 @@ $secondaryColor: #EDFBC1;
 
 .history-container{
     @include flexBox(column,start);
-    height: 100dvh;
-    background-color: #6B8F71;
+    height: 96dvh;
+    background-color: $primaryColor;
     position: absolute;
     top: 0px;
     right: 0px;
-    width: 12dvw;
-    padding: 15px
+    width: 15dvw;
+    padding: 15px;
+    overflow: hidden;
+}
+.overflow-container{
+    @include flexBox(column,start);
+    height: 100%;
+    overflow-y: auto;
+    width: 100%;
+    height: 97%;
 }
 .history-row{
     @include flexBox();
@@ -32,4 +40,26 @@ $secondaryColor: #EDFBC1;
 }
 .align-index{
     margin-left: -10px;
+}
+.close-history{
+    background-image: url('../../assets/icons/closeHistory.svg');
+    width: 50px;
+    height: 105px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    align-self: center;
+    display: flex;
+    position: absolute;
+    right: 16.5dvw;
+    top: 0px;
+    cursor: pointer;
+}
+.no-history{
+    background-image: url('../../assets/icons/no-history.svg');
+    width: 50%;
+    height: 35%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    align-self: center;
+    display: flex;
 }

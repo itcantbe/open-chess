@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { GameBoardComponent } from './game-board/game-board.component';
@@ -12,6 +12,12 @@ import { HistoryComponent } from './history/history.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit{
   title = 'open-chess';
+  /* showHistorySection = false; */
+  ngAfterViewInit(): void {
+    /* setTimeout(() => {
+      this.showHistorySection = true 
+    }, 0); */
+  }
 }

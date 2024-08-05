@@ -2,7 +2,7 @@
 
     <div class="button-group-container">
         <div class="member" [class.selected-button]="selectedMode === 0" (click)="changeMode(0)">Two Player</div>
-        <div class="member" [class.selected-button]="selectedMode === 1" (click)="changeMode(1)">VS Computer</div>
+        <div class="member" [class.selected-button]="selectedMode === 1" (click)="changeMode(1)">Play Computer</div>
     </div>
 
     <div class="center-block-container">
@@ -16,6 +16,7 @@
             [showPossibleCaptures]="setting['showPossibleCaptures']"
             [sourcePointColor]=""
             [destinationPointColor]=""
+            [drawDisabled]="setting['drawDisabled']"
             (moveChange)="logEvent($event)"
             >
         </ngx-chess-board>

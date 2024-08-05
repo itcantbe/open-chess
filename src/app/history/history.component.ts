@@ -3,14 +3,15 @@ interface historyEntry {
     black : ''
 }
 
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { StockfishService } from '../stockfish.service';
 import { distinctUntilChanged, tap } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss'
 })
@@ -20,6 +21,11 @@ export class HistoryComponent implements OnInit{
 
   
   public history : Array<historyEntry> = [];
+  
+  public fullHistory = []
+  @Input() public showHistory = false;
+
+  @Output() showHistoryEvent:EventEmitter<boolean> = new EventEmitter()
 
   ngOnInit(): void {
     this.stockFishService._history$.pipe(
@@ -32,13 +38,29 @@ export class HistoryComponent implements OnInit{
           else{
             this.history[this.history.length-1].black = value.pop()
           }
+          this.fullHistory = value
         }
         else{
           this.history =[]
         }
-        console.log(this.history)
       })
     ).subscribe()  
   }
-
+  toggleHistory(){
+    this.showHistory = !this.showHistory
+    this.showHistoryEvent.emit(false)
+  }
+  /* public goToMove(){
+    {
+      var moves = '';
+      var history = this.fullHistory;
+      
+      for(var i = 0; i < history.length; ++i) {
+          var move = history[i];
+          moves += ' ' + move.from + move.to + (move.promotion ? move.promotion : '');
+      }
+      
+      return moves;
+    }
+  } */
 }
