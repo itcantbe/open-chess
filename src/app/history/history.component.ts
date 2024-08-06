@@ -50,17 +50,7 @@ export class HistoryComponent implements OnInit{
     this.showHistory = !this.showHistory
     this.showHistoryEvent.emit(false)
   }
-  /* public goToMove(){
-    {
-      var moves = '';
-      var history = this.fullHistory;
-      
-      for(var i = 0; i < history.length; ++i) {
-          var move = history[i];
-          moves += ' ' + move.from + move.to + (move.promotion ? move.promotion : '');
-      }
-      
-      return moves;
-    }
-  } */
+  public goToMove(index){
+    this.stockFishService.setHistoryIndex(index)
+  }
 }

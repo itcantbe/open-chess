@@ -5,8 +5,8 @@
             Open Chess
         </div>
         <span class="botton-border-line"></span>
-        @for(item of menuItem; track item){
-            <div class="item-container">
+        @for(item of menuItem; track item; let index = $index){
+            <div class="item-container" (click)="openOption(index)">
                 <span class="sidebarmenu-icon"></span>
                 <span class="sidebarmenu-text">{{item}}</span>
             </div>

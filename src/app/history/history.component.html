@@ -3,11 +3,11 @@
     <div class="history-container" [style.justify-content]="history.length>0 ? 'start' : 'center'">
         @if(history.length>0){
             <div class="overflow-container">
-                @for (move of history; track history;; let index = $index){
+                @for (move of history; track history; let index = $index){
                 <div class="history-row">
                         <span class="white-text" [class.align-index]="index > 8">{{ (index + 1) }}.</span>
-                        <div class="history-entry">{{move.white}}</div>
-                        <div class="history-entry">{{move.black}}</div>
+                        <div class="history-entry" (click)="goToMove(index*2)">{{move.white}}</div>
+                        <div class="history-entry" (click)="goToMove(index*2 +1)">{{move.black}}</div>
                     </div>
                 }
             </div>

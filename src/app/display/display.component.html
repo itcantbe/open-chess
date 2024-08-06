@@ -1,1 +1,43 @@
-<p>display works!</p>
+<div class="display-board-container" *ngIf="showDisplayBoard">
+    <div class="display-board-heading">
+        <span>
+            Import Data
+        </span>
+        <span class="close-icon" (click)="closeDisplayBoard()"></span>
+    </div>
+    <div class="display-board-text-container">
+        <span class="display-board-text">Import PGN File : </span>
+        <div class="display-board-file-upload" (click)="PGNupload.click()">Choose File</div>
+        <input type="file" style="display:none" #PGNupload accept=".pgn" (change)="fileUploadEvent($event)"/>
+    </div>
+    <div class="display-board-text-container" *ngIf="gameArray.length!==0">
+        <span class="display-board-text">Loaded File Name : </span>
+        <div class="display-board-file-upload">{{fileName}}</div>
+    </div>
+    <div class="display-board-text-container" *ngIf="gameArray.length!==0">
+        <span class="display-board-text">Total Games in PGN : </span>
+        <div class="display-board-file-upload">{{gameArray.length}}</div>
+    </div>
+    <div class="display-board-text-container" *ngIf="gameArray.length!==0">
+        <span class="display-board-text">ALL Game List : </span>
+        <div class="display-board-file-upload">{{'Expand'}}</div>
+    </div>
+    <div class="display-board-scrollbox" *ngIf="gameArray.length!==0">
+        <table style="color: black; text-align: center;">
+            <tr>
+                <th>S.No.</th>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Round</th>
+            </tr>
+            @for(game of processedData; track game; let index = $index){
+                <tr style="cursor: pointer;" (click)="loadSelectedGame(game.Id)">
+                    <td>{{game.Id+1}}</td>
+                    <td>{{game.Event}}</td>
+                    <td>{{game.Date | date:'shortDate'}}</td>
+                    <td>{{game.Round}}</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

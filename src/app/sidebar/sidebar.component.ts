@@ -20,4 +20,8 @@ export class SidebarComponent {
     , 'Import Li Chess Game'  
     , 'Chess Books'
   ]
+  openOption(index){
+    console.log(index)
+    this.toggleSidebarMenu = !this.toggleSidebarMenu;
+  }
 }

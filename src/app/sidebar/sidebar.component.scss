@@ -37,6 +37,7 @@ $secondaryColor: #EDFBC1;
     width: 30px;
     cursor: pointer;
     margin-right: 15px;
+    margin-left: 35px;
 }
 .sidebarmenu-text{
     color: #FFFFFF;
@@ -45,17 +46,17 @@ $secondaryColor: #EDFBC1;
 .sidebarmenu-heading{
     color: #FFFFFF;
     font-size: 40px;
-    width: 100%;
+    width: -webkit-fill-available;
     padding: 25px 0px;
     margin-left: 35px;
 }
 .item-container{
     display: flex;
     flex-direction: row;
-    margin-left: 35px;
     margin-bottom: 40px;
     width: 100%;
     align-items: center;
+    cursor: pointer;
 }
 .botton-border-line{
     border-bottom:1px solid #00000050;

@@ -17,19 +17,31 @@
             [sourcePointColor]=""
             [destinationPointColor]=""
             [drawDisabled]="setting['drawDisabled']"
+            [showLastMove]="setting['showLastMove']"
+            [lightDisabled]="(_disableWhite$ | async)"
+            [darkDisabled]="(_disableBlack$ | async)"
             (moveChange)="logEvent($event)"
             >
         </ngx-chess-board>
         <div class="eval-container">
             <span class="eval-points">{{evalValue}}</span>
-            <span class="eval-bar"></span>
+            <span class="eval-bar" [class.fliped]="isReversed"></span>
             <span class="eval-pointer"[style.top]="evalPointerPosition()"></span>
         </div>
     </div>
 
-<div class="">
-    <button class="primary-button" (click)="reset()">Reset</button>
+<div class="navigation-button-container">
+    <div class="nav-icon-container divider">
+        <span class="back-button" (click)="previousMove()"></span>
+    </div>
+    <div class="nav-icon-container divider">
+        <span class="reset-button" (click)="reset()"></span>
+    </div>
+    <div class="nav-icon-container">
+        <span class="next-button" (click)="nextMove()"></span>
+    </div>
 </div>
-<app-modal *ngIf="showModal" [showModal]="showModal" [isWhite]="isWhite" [isWin]="isWin" (gameOver)="reset()"></app-modal>
+<app-modal *ngIf="showResultModal" [showResultModal]="showResultModal" [isWhite]="isWhite" [isWin]="isWin" (gameOver)="reset()" (newGame)="startNewCompGame($event)" (switchToSingle)="switchToSingle()"></app-modal>
+<app-modal *ngIf="showNewGameModal" [showNewGameModal] = "showNewGameModal" (newGame)="startNewCompGame($event)" (switchToSingle)="switchToSingle()"></app-modal>
 </div>
 <!-- [destinationPointColor]="setting['destinationPointColor']" -->

@@ -1,0 +1,77 @@
+$primaryColor: #6B8F71;
+$secondaryColor: #EDFBC1;
+
+@mixin flexBox($dir:row,$justify:space-around){
+    display: flex;
+    flex-direction: $dir;
+    justify-content: $justify;
+    align-items: center;
+}
+
+.display-board-container{
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    height: calc(98dvh * 0.8);
+    width: 22dvw;
+    border-radius: 10px;
+    background-color: $primaryColor;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    color: #ffffff;
+}
+.display-board-heading{
+    @include flexBox(row, center);
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid white;
+}
+.close-icon{
+    background-image: url("../../assets/icons/close.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 25px;
+    width: 25px;
+    align-self: center;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+}
+.display-board-text-container{
+    @include flexBox(row,space-between);
+    margin-top: 15px;
+    padding: 0px 20px;
+}
+.display-board-text{
+    font-size: 16px;
+    width: 70%;
+}
+.display-board-file-upload{
+    border-radius: 10px;
+    background-color: $secondaryColor;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    color: black;
+    padding: 5px 15px;
+    cursor: pointer;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+.display-board-scrollbox{
+    background-color: $secondaryColor;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    margin: 5px 15px;
+    width: 93%;
+    height: 60%;
+    overflow-y: auto;
+}
+.game-container{
+    color: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10px;
+}

@@ -1,4 +1,4 @@
-<div class="modal-container" *ngIf="showModal" (click)="gameEnd()">
+<div class="modal-container" *ngIf="showResultModal" (click)="gameEnd()">
     <div class="dialog-conntainer">
         <div class="modal-heading-container">
             <span class="modal-heading">Game Over</span>
@@ -7,6 +7,47 @@
             <span class="whiteKing" *ngIf="isWhite"></span>
             <span class="blackKing" *ngIf="!isWhite"></span>
             <span class="result-string">{{resultString}}</span>
+        </div>
+    </div>
+</div>
+
+<div class="modal-container" *ngIf="showNewGameModal" (click)="cancelNewGame()">
+    <div class="dialog-conntainer" (click)="$event.stopPropagation()">
+        <div class="modal-heading-container">
+            <span class="modal-heading">New Game</span>
+        </div>
+        <div class="result-container">
+            <span class="new-game-text-container">Select Color</span>
+            <div class="new-game-color-container">
+                <div class="color-selector-button" [class.color-button-selected]="selectedColor === 0">
+                    <span class="whiteKing" (click)="selectedColor = 0"></span>
+                </div>
+                <div class="color-selector-button" [class.color-button-selected]="selectedColor === 1">
+                    <span class="blackKing" (click)="selectedColor = 1"></span>
+                </div>
+                <div class="color-selector-button" [class.color-button-selected]="selectedColor === 2">
+                    <span class="random" (click)="selectedColor = 2"></span>
+                </div>
+            </div>
+
+            <span class="new-game-text-container">Select Difficulty</span>
+            <div class="new-game-color-container">
+                <div class="color-selector-button" [class.color-button-selected]="selectedDifficulty === 0">
+                    <span class="blackPawn" (click)="selectedDifficulty = 0"></span>
+                </div>
+                <div class="color-selector-button" [class.color-button-selected]="selectedDifficulty === 1">
+                    <span class="blackBishop" (click)="selectedDifficulty = 1"></span>
+                </div>
+                <div class="color-selector-button" [class.color-button-selected]="selectedDifficulty === 2">
+                    <span class="blackKing" (click)="selectedDifficulty = 2"></span>
+                </div>
+            </div>
+            @if(selectedDifficulty === null || selectedColor === null){
+                <div class="start-game-button" style="opacity: 0.6;">Start Game</div>
+            }
+            @else{
+                <div class="start-game-button" (click)="startNewGame()">Start Game</div>
+            }
         </div>
     </div>
 </div>

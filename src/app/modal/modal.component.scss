@@ -44,8 +44,32 @@
     height: 100px;
     width: 100px;
 }
+.blackBishop{
+    background-image: url("../../assets/icons/Chess_bdt45.svg.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    align-self: center;
+    height: 100px;
+    width: 100px;
+}
+.blackPawn{
+    background-image: url("../../assets/icons/Chess_pdt45.svg.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    align-self: center;
+    height: 100px;
+    width: 100px;
+}
 .whiteKing{
     background-image: url("../../assets/icons/Chess_klt45.svg.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100px;
+    width: 100px;
+    align-self: center;
+}
+.random{
+    background-image: url("../../assets/icons/random.svg");
     background-repeat: no-repeat;
     background-size: contain;
     height: 100px;
@@ -56,4 +80,38 @@
     text-align: center;
     font-size: 28px;
     font-weight: 600;
+}
+.new-game-color-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+.color-selector-button{
+    border: 1px solid rgba(217, 217, 217);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    margin: 15px;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    border-radius: 16px;
+    cursor: pointer;
+}
+.new-game-text-container{
+    font-size: 24px;
+    margin-top: 10px;
+    color: #11111180;
+}
+.color-button-selected{
+    background-color: #EDFBC1;
+}
+.start-game-button{
+    background-color: #6B8F71;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px 50px;
+    border-radius: 16px;
+    color: #ffffff;
+    cursor: pointer;
 }

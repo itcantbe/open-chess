@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, Output, EventEmitter } from '@angular/core';
+import { AfterViewInit, Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
@@ -11,14 +11,23 @@ import { CommonModule } from '@angular/common';
 })
 export class ModalComponent implements AfterViewInit{
   
-  @Input() showModal = false;
+  @Input() showResultModal = false;
   @Input() isWhite : boolean = null;
   @Input() isWin : boolean = null;
-
+  
   @Output() gameOver : EventEmitter<boolean>= new EventEmitter();
+  @Output() switchToSingle : EventEmitter<boolean>= new EventEmitter();
+  
+  @Input() showNewGameModal = false;
+  public selectedColor : number = null
+  public selectedDifficulty : number = null
+
+  @Output() newGame : EventEmitter<Array<number>>= new EventEmitter();
 
   public resultString =''
-
+  
+  @ViewChild('container', {static:false}) container!: HTMLDivElement;
+  
   ngAfterViewInit(): void {
 
     setTimeout(() => {
@@ -45,8 +54,17 @@ export class ModalComponent implements AfterViewInit{
       }
     }, 0);
   }
+  
   public gameEnd(){
-    this.showModal = false;
+    this.showResultModal = false;
     this.gameOver.emit(true)
+  }
+  public cancelNewGame(){
+    this.showNewGameModal = false;
+    this.switchToSingle.emit(true)
+  }
+  public startNewGame(){
+    this.showNewGameModal = false;
+    this.newGame.emit([this.selectedColor,this.selectedDifficulty])
   }
 }
