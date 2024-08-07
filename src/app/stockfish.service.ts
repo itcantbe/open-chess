@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Chess } from 'chess.js'
+import { Chess, validateFen } from 'chess.js'
 
 @Injectable({
   providedIn: 'root'
@@ -23,9 +23,16 @@ export class StockfishService implements OnInit{
   private history$ = new BehaviorSubject<any>(null);
   public _history$ = this.history$.asObservable();
 
-  private historyIndex$ = new BehaviorSubject<number>(null);
+  private historyIndex$ = new BehaviorSubject<any>(null);
   public _historyIndex$ = this.historyIndex$.asObservable();
 
+  private loadedPGN$ = new BehaviorSubject<string>(null);
+  public _loadedPGN$ = this.loadedPGN$.asObservable();
+
+  public loadedPGNHeader;
+
+  private loadedFEN$ = new BehaviorSubject<string>(null);
+  public _loadedFEN$ = this.loadedFEN$.asObservable();
   private computerMove = '';
 
   constructor() {
@@ -75,6 +82,8 @@ export class StockfishService implements OnInit{
     this.history$.next(null)
     this.recommendation$.next(null)
     this.evaluation$.next(null)
+    this.loadedPGN$.next(null)
+    this.historyIndex$.next(null)
   }
   public setEloValueEngine(value){
     this.postCommand(`setoption name UCI_Elo value ${value}`)
@@ -86,6 +95,9 @@ export class StockfishService implements OnInit{
     }
     if(move===''){
       this.currentGame = new Chess();
+      if(this.loadedFEN$.getValue()!==null){
+        this.currentGame.load(this.loadedFEN$.getValue())
+      }
     }
     if(move){
       if(computerMode){
@@ -166,5 +178,21 @@ export class StockfishService implements OnInit{
   public stopStockfish(){
     this.postCommand('stop')
     this.postCommand('stop',true)
+  }
+  public setPGNgame(game){
+    this.newGame()
+    this.currentGame.loadPgn(game)
+    this.loadedPGNHeader = this.currentGame.header()
+    this.history$.next(this.currentGame.history())
+    this.loadedPGN$.next(game)
+  }
+  public quitEngine(){
+    this.postCommand('quit')
+    this.postCommand('quit', true)
+  }
+  public setFENstring(value){
+    if(validateFen(value)){
+      this.loadedFEN$.next(value)
+    }
   }
 }

@@ -10,20 +10,40 @@ export class IndexedDbService {
   private readonly objectStore = 'pgnGames'
   public db = null;
 
+  private previousCall;
+  private insertData = false;
+  private getData = false;
+
   private moves = []
 
-  public compReq = false
+  private oldGameData$ = new BehaviorSubject<any>(null);
+  public _oldGameData$ = this.oldGameData$.asObservable();
+  private noGamesLoaded: boolean = false;
   constructor() {
    }
   public async setGameInDB(moves){
     this.moves = moves
+    this.insertData = true
+    this.getData = false
+    this.openIndexDB()
+  }
+  public async getDataFromDB(){
+    this.getData = true
+    this.insertData = false
     this.openIndexDB()
   }
   private openIndexDB(){
     console.log("Starting");
     let req = window.indexedDB.open(this.DB_NAME, this.DB_VERSION);
     req.onsuccess = (evt)=> {
+      console.log("DB Loaded")
       this.db = req.result;
+      if(this.getData && !this.noGamesLoaded){
+        this.getALLDataInDB();
+      }
+      if(this.insertData){
+        this.putGamesToIndexDB()
+      }
     };
     req.onerror = (evt) => {
       console.error("openDb: Error", evt.target);
@@ -32,75 +52,76 @@ export class IndexedDbService {
       const db = event.target['result'];
       
       db.onerror = (event) => {
-          console.log("Error loading database.",event)
+        console.log("Error loading database.",event)
       };
-      // Create an objectStore for this database
-      const objectStore = db.createObjectStore(this.objectStore, {
-        keyPath: "Id",
-      });
-    
-      // define what data items the objectStore will contain
-    
-      objectStore.createIndex("Event", "Event", { unique: false });
-      objectStore.createIndex("Site", "Site", { unique: false });
-      objectStore.createIndex("Date", "Date", { unique: false });
-      objectStore.createIndex("Round", "Round", { unique: false });
-      objectStore.createIndex("White", "White", { unique: false });
-      objectStore.createIndex("Black", "Black", { unique: false });
-      objectStore.createIndex("Result", "Result", { unique: false });
-      objectStore.createIndex("WhiteElo", "WhiteElo", { unique: false });
-      objectStore.createIndex("BlackElo", "BlackElo", { unique: false });
-      objectStore.createIndex("ECO", "ECO", { unique: false });
-      objectStore.createIndex("Moves", "Moves", { unique: false });
-
-      this.addGamesToIndexDB(event.target['transaction'])
-      /* db.deleteObjectStore("store1"); */
+      if(!this.getData){
+        // Create an objectStore for this database
+        const objectStore = db.createObjectStore(this.objectStore, {
+          keyPath: "Id",
+        });
+        
+        // define what data items the objectStore will contain
+      
+        objectStore.createIndex("Event", "Event", { unique: false });
+        objectStore.createIndex("Site", "Site", { unique: false });
+        objectStore.createIndex("Date", "Date", { unique: false });
+        objectStore.createIndex("Round", "Round", { unique: false });
+        objectStore.createIndex("White", "White", { unique: false });
+        objectStore.createIndex("Black", "Black", { unique: false });
+        objectStore.createIndex("Result", "Result", { unique: false });
+        objectStore.createIndex("WhiteElo", "WhiteElo", { unique: false });
+        objectStore.createIndex("BlackElo", "BlackElo", { unique: false });
+        objectStore.createIndex("ECO", "ECO", { unique: false });
+        objectStore.createIndex("Moves", "Moves", { unique: false });
+  
+        this.addGamesToIndexDB(event.target['transaction'])
+        /* db.deleteObjectStore("store1"); */
+      }
+      else{
+        this.noGamesLoaded = true
+        window.indexedDB.deleteDatabase(this.DB_NAME);
+        console.log('No Data')
+      }
     };
   } 
   public addGamesToIndexDB(trxn){
-    
+    this.insertData = false
     let _objectStore = trxn.objectStore(this.objectStore,"readwrite")
     for(let i of this.moves){
-      let addToObjectStore = _objectStore.add(i)
-      addToObjectStore.onsuccess = function (evt) {
-        this.compReq = true
-        console.log("Insertion in DB successful");
-        return 
-      };
-      addToObjectStore.onerror = function() {
-        console.error("addPublication error", this.error);
-        return
-      };
+      this.previousCall = _objectStore.add(i)
     }
+    this.previousCall.onsuccess = () => {
+      this.moves = []
+      this.insertData = false;
+      console.log("Insertion in DB successful");
+    };
+    this.previousCall.onerror = (evt) => {
+      console.error("addPublication error", evt);
+    };
   }
-
+  public putGamesToIndexDB(){
+    let _objectStore = this.db.transaction(this.objectStore,"readwrite").objectStore(this.objectStore,"readwrite")
+    for(let i of this.moves){
+      this.previousCall = _objectStore.put(i)
+    }
+    this.previousCall.onsuccess = () => {
+      this.moves = []
+      this.insertData = false;
+      console.log("Insertion in DB successful");
+    };
+    this.previousCall.onerror = (evt) => {
+      console.error("addPublication error", evt);
+    };
+  }
   //Code to get old data
-  /* public clearObjectStore(){
-    var store = this.getObjectStore(this.objectStore, 'readwrite');
-    var req = store.clear();
-    req.onsuccess = function(evt) {
-      console.log('Sucess: ',evt)
+  private getALLDataInDB(){
+    let request = this.db.transaction(this.objectStore).objectStore(this.objectStore).getAll();
+    request.onsuccess = ()=> {
+      const games = request.result;
 
-    };
-    req.onerror = function (evt) {
-      console.error("clearObjectStore:", evt.target.errorCode);
-      console.log('Error: ',event)   
-    };
-  }
-  public async getGamesFromIndexDB(obj){
-    if(this.db === null){
-      this.openIndexDB();
+      console.log('Got all the games');
+      this.oldGameData$.next(games)
+      this.db.close()
     }
-    let objectStore = this.getObjectStore(this.objectStore,"readwrite")
-    let getFromObjectStore = objectStore.get(obj)
-
-    getFromObjectStore.onsuccess = function (evt) {
-      console.log("Fetching from DB successful");
-      return 
-    };
-    getFromObjectStore.onerror = function() {
-      console.error("get error", this.error);
-      return
-    };
-  } */
+  }
 }

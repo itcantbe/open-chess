@@ -1,9 +1,18 @@
 <div class="board-container" #container>
 
-    <div class="button-group-container">
-        <div class="member" [class.selected-button]="selectedMode === 0" (click)="changeMode(0)">Two Player</div>
-        <div class="member" [class.selected-button]="selectedMode === 1" (click)="changeMode(1)">Play Computer</div>
-    </div>
+    @if(!isPGNgame){
+        <div class="button-group-container">
+            <div class="member" [class.selected-button]="selectedMode === 0" (click)="changeMode(0)">Two Player</div>
+            <div class="member" [class.selected-button]="selectedMode === 1" (click)="changeMode(1)">Play Computer</div>
+        </div>
+    }
+    @else{
+        <div class="pgn-players-container">
+            <span class="pgn-name">{{PGNgameHeader['White']}}</span>
+            <span class="pgn-name">V/s</span>
+            <span class="pgn-name">{{PGNgameHeader['Black']}}</span>
+        </div>
+    }
 
     <div class="center-block-container">
         <ngx-chess-board 
@@ -23,11 +32,47 @@
             (moveChange)="logEvent($event)"
             >
         </ngx-chess-board>
+    @if(!isPGNgame){
         <div class="eval-container">
             <span class="eval-points">{{evalValue}}</span>
             <span class="eval-bar" [class.fliped]="isReversed"></span>
             <span class="eval-pointer"[style.top]="evalPointerPosition()"></span>
         </div>
+    }   
+    @else{
+        <div class="pgn-details-container">
+            <div class="detail-container">
+                <span>Event</span><span>{{PGNgameHeader['Event']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>Site</span><span>{{PGNgameHeader['Site']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>Date</span><span>{{PGNgameHeader['Date'] | date:'dd/MM/YYYY'}}</span>
+            </div>
+            <div class="detail-container">
+                <span>Round</span><span>{{PGNgameHeader['Round']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>Black</span><span>{{PGNgameHeader['Black']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>BlackElo</span><span>{{PGNgameHeader['BlackElo']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>White</span><span>{{PGNgameHeader['White']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>WhiteElo</span><span>{{PGNgameHeader['WhiteElo']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>Result</span><span>{{PGNgameHeader['Result']}}</span>
+            </div>
+            <div class="detail-container">
+                <span>ECO</span><span>{{PGNgameHeader['ECO']}}</span>
+            </div>
+        </div>
+    }
     </div>
 
 <div class="navigation-button-container">
@@ -44,4 +89,5 @@
 <app-modal *ngIf="showResultModal" [showResultModal]="showResultModal" [isWhite]="isWhite" [isWin]="isWin" (gameOver)="reset()" (newGame)="startNewCompGame($event)" (switchToSingle)="switchToSingle()"></app-modal>
 <app-modal *ngIf="showNewGameModal" [showNewGameModal] = "showNewGameModal" (newGame)="startNewCompGame($event)" (switchToSingle)="switchToSingle()"></app-modal>
 </div>
+
 <!-- [destinationPointColor]="setting['destinationPointColor']" -->

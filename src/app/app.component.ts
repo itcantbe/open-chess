@@ -15,10 +15,16 @@ import { DisplayComponent } from './display/display.component';
 })
 export class AppComponent implements AfterViewInit{
   title = 'open-chess';
-  /* showHistorySection = false; */
+  public showDisplayBoard = false
+
   ngAfterViewInit(): void {
-    /* setTimeout(() => {
-      this.showHistorySection = true 
-    }, 0); */
+  }
+  public selectedMenuItem(event){
+    if(event === 0){
+      this.showDisplayBoard = true;
+    }
+  }
+  displayBoardClosed(){
+    this.showDisplayBoard = false;
   }
 }

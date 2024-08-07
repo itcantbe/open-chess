@@ -16,6 +16,8 @@
     justify-content: space-around;
     border-radius: 10px;
     padding: 15px 45px 45px 45px;
+    max-height: 75dvh;
+    overflow: hidden;
 }
 .modal-heading-container{
     display: flex;
@@ -114,4 +116,15 @@
     border-radius: 16px;
     color: #ffffff;
     cursor: pointer;
+}
+.filter-container{
+    background-color: #ffffff;
+    position: sticky;
+    top: 0px;
+}
+.filter-input{
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid #d8d8d8;
+    padding-left: 10px;
 }

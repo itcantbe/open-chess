@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,6 +9,7 @@ import { Component, Input } from '@angular/core';
 })
 export class SidebarComponent {
   @Input() public toggleSidebarMenu = false;
+  @Output() selectedIndex = new EventEmitter()
   public menuItem =[
     'Import Game  '
     , 'Puzzles  '
@@ -21,7 +22,7 @@ export class SidebarComponent {
     , 'Chess Books'
   ]
   openOption(index){
-    console.log(index)
+    this.selectedIndex.emit(index)
     this.toggleSidebarMenu = !this.toggleSidebarMenu;
   }
 }

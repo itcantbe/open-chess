@@ -51,3 +51,51 @@
         </div>
     </div>
 </div>
+
+<div class="modal-container" *ngIf="showGameListModal" (click)="closeGameScreen()">
+    <div class="dialog-conntainer" (click)="$event.stopPropagation()">
+        <div class="modal-heading-container">
+            <span class="modal-heading">Available Game List</span>
+        </div>
+        <div class="result-container" style="overflow-y: auto; min-width: 90dvw;">
+            <table style="color: black; text-align: center;padding: 10px; width: 100%;">
+                <tr>
+                    <th style="padding: 10px;">S.No.</th>
+                    <th style="padding: 10px;">Event</th>
+                    <th style="padding: 10px;">Date</th>
+                    <th style="padding: 10px;">Round</th>
+                    <th style="padding: 10px;">Site</th>
+                    <th style="padding: 10px;">White</th>
+                    <th style="padding: 10px;">WhiteElo</th>
+                    <th style="padding: 10px;">Black</th>
+                    <th style="padding: 10px;">BlackElo</th>
+                </tr>
+                <tr class="filter-container">
+                    <th style="padding: 10px;"></th>
+                    <th style="padding: 10px;"><input placeholder="Event" class="filter-input" (keyup)="filterData($event,'Event')"/></th>
+                    <th style="padding: 10px;"><input placeholder="Date" class="filter-input" (keyup)="filterData($event,'Date')"/></th>
+                    <th style="padding: 10px;"></th>
+                    <th style="padding: 10px;"><input placeholder="Site" class="filter-input" (keyup)="filterData($event,'Site')"/></th>
+                    <th style="padding: 10px;"><input placeholder="White" class="filter-input" (keyup)="filterData($event,'White')"/></th>
+                    <th style="padding: 10px;"><input placeholder="WhiteElo" class="filter-input" (keyup)="filterData($event,'WhiteElo')"/></th>
+                    <th style="padding: 10px;"><input placeholder="Black" class="filter-input" (keyup)="filterData($event,'Black')"/></th>
+                    <th style="padding: 10px;"><input placeholder="BlackElo" class="filter-input" (keyup)="filterData($event,'BlackElo')"/></th>
+                </tr>
+                @for(game of processedGameList; track game.Id; let index = $index){
+                    <tr style="cursor: pointer;" (click)="selectedGame(game)">
+                        <td>{{index+1}}</td>
+                        <td>{{game.Event}}</td>
+                        <td>{{game.Date | date:'dd/MM/YYYY'}}</td>
+                        <td>{{game.Round}}</td>
+                        <td>{{game.Site}}</td>
+                        <td>{{game.White}}</td>
+                        <td>{{game.WhiteElo}}</td>
+                        <td>{{game.Black}}</td>
+                        <td>{{game.BlackElo}}</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+<!-- (click)="loadSelectedGame(game.Id)" -->

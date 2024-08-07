@@ -47,6 +47,9 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
 
   private userColor: number = null;
   public isReversed: boolean = false;
+
+  public isPGNgame = false;
+  public PGNgameHeader = {};
   constructor(
     private stockFishService:StockfishService
   ){
@@ -133,6 +136,32 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
         }
       })
      ).subscribe()
+
+     this.stockFishService._loadedPGN$.pipe(
+      distinctUntilChanged(),
+      tap((value)=>{
+        if(value){
+          this.PGNgameHeader =this.stockFishService.loadedPGNHeader
+          this.board.reset();
+          this.fenStringArray = []
+          this.isPGNgame = true;
+          this.board.setPGN(value);
+          /* this.movePointer = this.fenStringArray.length
+          this.nextMove(); */
+        }
+      })
+     ).subscribe();
+
+     this.stockFishService._loadedFEN$.pipe(
+      distinctUntilChanged(),
+      tap((value)=>{
+        if(value){
+          this.board.reset();
+          this.board.setFEN(value);
+          this.stockFishService.getReccomendation(this.DEPTH,value,'')
+        }
+      })
+     ).subscribe();
   }
   ngAfterViewInit(): void {
    setTimeout(() => {
@@ -161,11 +190,12 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
     this.stockFishService.newGame();
     this.showNewGameModal =false;
     this.showResultModal = false;
+    this.isPGNgame = false;
     this.board.clearArrows();
     this.stockFishService.stopStockfish();
   }
   public logEvent(event){
-    if(event.checkmate){
+    if(event.checkmate && !this.isPGNgame){
       this.showResultModal = true;
       if(event.color === 'white') {
         this.isWhite =true
@@ -175,7 +205,7 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
       }
       this.isWin = true
     }
-    else if(event.stalemate){
+    else if(event.stalemate && !this.isPGNgame){
       this.showResultModal = true;
       this.isWin = false;
     }
@@ -187,13 +217,15 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
       this.currentTurn = 0;
     }
     this.board.clearArrows();
-    this.fenStringArray.unshift(this.board.getFEN())
-    if(this.selectedMode === 0){
-      this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move);  
-    }
-    else{
-      if(this.userColor !== this.currentTurn){
-        this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move,true,this.userColor);  
+    this.fenStringArray.unshift(this.FEN_POSITION)
+    if(!this.isPGNgame){
+      if(this.selectedMode === 0){
+        this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move);  
+      }
+      else{
+        if(this.userColor !== this.currentTurn){
+          this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move,true,this.userColor);  
+        }
       }
     }
   }

@@ -114,3 +114,31 @@ $secondaryColor: #EDFBC1;
 .fliped{
     transform: rotateX(180deg);
 }
+.pgn-players-container{
+    @include flexBox(row,space-around);
+    background-color: $secondaryColor;
+    @extend .button-defaults;
+    width:25dvw;
+}
+.pgn-name{
+    padding: 20px 0px;
+    font-size: 18px;
+}
+.pgn-details-container{
+    @include flexBox(column, space-around);
+    margin-left: 3%;
+    background-color: $secondaryColor;
+    height: fit-content;
+    width: 15dvw;
+    padding: 15px;
+    border-radius:10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    position: absolute;
+    top: 25%;
+    right: 10%;
+}
+.detail-container{
+    @include flexBox(row, space-between);
+    margin-bottom: 10px;
+    width: 100%;
+}

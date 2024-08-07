@@ -10,34 +10,43 @@
         <div class="display-board-file-upload" (click)="PGNupload.click()">Choose File</div>
         <input type="file" style="display:none" #PGNupload accept=".pgn" (change)="fileUploadEvent($event)"/>
     </div>
-    <div class="display-board-text-container" *ngIf="gameArray.length!==0">
+    <div class="display-board-text-container" *ngIf="gameArray.length!==0 && !previousGameOnly">
         <span class="display-board-text">Loaded File Name : </span>
         <div class="display-board-file-upload">{{fileName}}</div>
     </div>
     <div class="display-board-text-container" *ngIf="gameArray.length!==0">
-        <span class="display-board-text">Total Games in PGN : </span>
+        <span class="display-board-text">Total Games : </span>
         <div class="display-board-file-upload">{{gameArray.length}}</div>
     </div>
     <div class="display-board-text-container" *ngIf="gameArray.length!==0">
-        <span class="display-board-text">ALL Game List : </span>
-        <div class="display-board-file-upload">{{'Expand'}}</div>
+        <span class="display-board-text">ALL Games List : </span>
+        <div class="display-board-file-upload" (click)="openFullListPopup()">{{'Full List'}}</div>
     </div>
     <div class="display-board-scrollbox" *ngIf="gameArray.length!==0">
-        <table style="color: black; text-align: center;">
+        <table style="color: black; text-align: center;padding: 10px;">
             <tr>
                 <th>S.No.</th>
                 <th>Event</th>
                 <th>Date</th>
                 <th>Round</th>
             </tr>
-            @for(game of processedData; track game; let index = $index){
-                <tr style="cursor: pointer;" (click)="loadSelectedGame(game.Id)">
-                    <td>{{game.Id+1}}</td>
+            @for(game of processedData; track game.Id; let index = $index){
+                <tr style="cursor: pointer;" (click)="loadSelectedGame(index)">
+                    <td>{{index+1}}</td>
                     <td>{{game.Event}}</td>
-                    <td>{{game.Date | date:'shortDate'}}</td>
+                    <td>{{game.Date | date:'dd/MM/YY'}}</td>
                     <td>{{game.Round}}</td>
                 </tr>
             }
         </table>
     </div>
+    <div class="display-board-text-container">
+        <span class="display-board-text">Get Previously Imported Games : </span>
+        <div class="display-board-file-upload" (click)="getALLPreviousGames()">{{'Import'}}</div>
+    </div>
+    <div class="display-board-text-container">
+        <span class="display-board-text">Load FEN String : </span>
+        <input class="fen-input" (change)="loadFENstring($event)"/>
+    </div>
 </div>
+<app-modal *ngIf="showGameListModal" [showGameListModal] = "showGameListModal" [gameList]="processedData" (gameScreenClosed)="closedPopup($event)" (gameSelected)="loadSelectedGame($event); showGameListModal = false"></app-modal>

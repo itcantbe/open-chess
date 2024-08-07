@@ -31,20 +31,34 @@ export class HistoryComponent implements OnInit{
     this.stockFishService._history$.pipe(
       distinctUntilChanged(),
       tap((value)=>{
-        if(value?.length > 0){
-          if(value?.length % 2 === 1){
-            this.history.push({white:value.pop(),black:''})
+        if(value?.length>1 && this.history.length === 0){
+          for(let i = 0; i<value.length;i++){
+            if(i%2 === 0){
+              this.history.push({white:value[i],black:''})
+            }
+            else{
+              this.history[this.history.length-1].black = value[i]
+            }
           }
-          else{
-            this.history[this.history.length-1].black = value.pop()
-          }
-          this.fullHistory = value
         }
         else{
-          this.history =[]
+          if(value?.length > 0){
+            if(value?.length % 2 === 1){
+              this.history.push({white:value.pop(),black:''})
+            }
+            else{
+              this.history[this.history.length-1].black = value.pop()
+            }
+            this.fullHistory = value
+          }
+          else{
+            this.history =[]
+          }
         }
+        
       })
-    ).subscribe()  
+    ).subscribe() 
+    
   }
   toggleHistory(){
     this.showHistory = !this.showHistory
