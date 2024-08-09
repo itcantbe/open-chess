@@ -4,6 +4,7 @@ import { NgxChessBoardModule, NgxChessBoardView, PieceIconInput } from "ngx-ches
 import { ModalComponent } from '../modal/modal.component';
 import { StockfishService } from '../stockfish.service';
 import { BehaviorSubject, distinctUntilChanged, tap } from 'rxjs';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 
 @Component({
@@ -11,7 +12,16 @@ import { BehaviorSubject, distinctUntilChanged, tap } from 'rxjs';
   standalone: true,
   imports: [ CommonModule, NgxChessBoardModule,ModalComponent],
   templateUrl: './game-board.component.html',
-  styleUrl: './game-board.component.scss'
+  styleUrl: './game-board.component.scss',
+  animations : [
+    trigger('onOff', [
+      transition(':enter', [style({
+        transform: 'rotateX(180deg)'
+      }),
+      animate(1000)
+    ])
+    ])
+  ]
 })
 export class GameBoardComponent implements OnInit, AfterViewInit{
 
@@ -50,6 +60,20 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
 
   public isPGNgame = false;
   public PGNgameHeader = {};
+
+  public isPuzzles = false;
+  private puzzleMoves = [];
+  private currentPuzzleMoveCount = 0;
+  private puzzleId = 0;
+  public puzzleRating = 0;
+
+  public userData = {};
+
+  public amimationValue = 'rotateX(0deg)';
+  public reverseAmimationValue = 'rotateX(180deg)'
+  public showResultPuzzle = false;
+
+  public correct = false;
   constructor(
     private stockFishService:StockfishService
   ){
@@ -58,19 +82,19 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
   public setting = {}
 
   private chessPieceIcons : PieceIconInput = {
-    whiteKingUrl: "../../assets/icons/Chess_klt45.svg.png",
-    whiteQueenUrl: "../../assets/icons/Chess_qlt45.svg.png",
-    whiteKnightUrl: "../../assets/icons/Chess_nlt45.svg.png",
-    whiteRookUrl: "../../assets/icons/Chess_rlt45.svg.png",
-    whitePawnUrl: "../../assets/icons/Chess_plt45.svg.png",
-    whiteBishopUrl: "../../assets/icons/Chess_blt45.svg.png",
+    whiteKingUrl: "../../assets/icons/Chess_klt45.svg",
+    whiteQueenUrl: "../../assets/icons/Chess_qlt45.svg",
+    whiteKnightUrl: "../../assets/icons/Chess_nlt45.svg",
+    whiteRookUrl: "../../assets/icons/Chess_rlt45.svg",
+    whitePawnUrl: "../../assets/icons/Chess_plt45.svg",
+    whiteBishopUrl: "../../assets/icons/Chess_blt45.svg",
     
-    blackKingUrl: "../../assets/icons/Chess_kdt45.svg.png",
-    blackQueenUrl: "../../assets/icons/Chess_qdt45.svg.png",
-    blackKnightUrl: "../../assets/icons/Chess_ndt45.svg.png",
-    blackRookUrl: "../../assets/icons/Chess_rdt45.svg.png",
-    blackPawnUrl: "../../assets/icons/Chess_pdt45.svg.png",
-    blackBishopUrl: "../../assets/icons/Chess_bdt45.svg.png"
+    blackKingUrl: "../../assets/icons/Chess_kdt45.svg",
+    blackQueenUrl: "../../assets/icons/Chess_qdt45.svg",
+    blackKnightUrl: "../../assets/icons/Chess_ndt45.svg",
+    blackRookUrl: "../../assets/icons/Chess_rdt45.svg",
+    blackPawnUrl: "../../assets/icons/Chess_pdt45.svg",
+    blackBishopUrl: "../../assets/icons/Chess_bdt45.svg"
   }
 
   ngOnInit(): void {
@@ -158,8 +182,38 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
         if(value){
           this.board.reset();
           this.board.setFEN(value);
+          this.board.move('a7b8q')
           this.stockFishService.getReccomendation(this.DEPTH,value,'')
         }
+      })
+     ).subscribe();
+
+     this.stockFishService._loadedPuzzle$.pipe(
+      distinctUntilChanged(),
+      tap((value)=>{
+        if(value){
+          this.board.reset();
+          this.board.clearArrows();
+          this.fenStringArray = []
+          this.isPuzzles = true;
+          this.board.setFEN(value['FEN']);
+          let moveArr = value['Moves'].split(" ")
+          this.fenStringArray.unshift(value['FEN'])
+          this.puzzleMoves = moveArr;
+          this.puzzleId = value['ID'];
+          this.currentPuzzleMoveCount = 0;
+          this.puzzleRating = value['Rating']
+          setTimeout(() => {
+            this.handlePuzzleMoves()
+          }, 1000);
+        }
+      })
+     ).subscribe();
+
+     this.stockFishService._userData$.pipe(
+      distinctUntilChanged(),
+      tap((value)=>{
+        this.userData = value;
       })
      ).subscribe();
   }
@@ -167,6 +221,7 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
    setTimeout(() => {
      this.setting['size'] = this.calculateScreenSize();
      this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION,'');
+     this.fenStringArray.unshift(this.FEN_POSITION)
    }, 0);
   }
 
@@ -195,37 +250,45 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
     this.stockFishService.stopStockfish();
   }
   public logEvent(event){
-    if(event.checkmate && !this.isPGNgame){
-      this.showResultModal = true;
+    if(!this.isPuzzles){
+      if(event.checkmate && !this.isPGNgame){
+        this.showResultModal = true;
+        if(event.color === 'white') {
+          this.isWhite =true
+        }
+        else{
+          this.isWhite = false;
+        }
+        this.isWin = true
+      }
+      else if(event.stalemate && !this.isPGNgame){
+        this.showResultModal = true;
+        this.isWin = false;
+      }
+      this.FEN_POSITION = event.fen
       if(event.color === 'white') {
-        this.isWhite =true
+        this.currentTurn = 1;
       }
       else{
-        this.isWhite = false;
+        this.currentTurn = 0;
       }
-      this.isWin = true
-    }
-    else if(event.stalemate && !this.isPGNgame){
-      this.showResultModal = true;
-      this.isWin = false;
-    }
-    this.FEN_POSITION = event.fen
-    if(event.color === 'white') {
-      this.currentTurn = 1;
+      this.board.clearArrows();
+      this.fenStringArray.unshift(this.FEN_POSITION)
+      if(!this.isPGNgame && !this.isPuzzles){
+        if(this.selectedMode === 0){
+          this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move);  
+        }
+        else{
+          if(this.userColor !== this.currentTurn){
+            this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move,true,this.userColor);  
+          }
+        }
+      }
     }
     else{
-      this.currentTurn = 0;
-    }
-    this.board.clearArrows();
-    this.fenStringArray.unshift(this.FEN_POSITION)
-    if(!this.isPGNgame){
-      if(this.selectedMode === 0){
-        this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move);  
-      }
-      else{
-        if(this.userColor !== this.currentTurn){
-          this.stockFishService.getReccomendation(this.DEPTH,this.FEN_POSITION, event.move,true,this.userColor);  
-        }
+      this.fenStringArray.unshift(event.fen)
+      if(this.currentPuzzleMoveCount%2==1){
+        this.handlePuzzleMoves(event.move)
       }
     }
   }
@@ -269,7 +332,7 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
       this.disableWhite$.next(true)
       this.disableBlack$.next(true)
     }
-    if(this.movePointer<=this.fenStringArray.length){
+    if(this.movePointer<this.fenStringArray.length){
       this.board.setFEN(this.fenStringArray[this.movePointer])
       this.board.clearArrows()
     }
@@ -323,5 +386,55 @@ export class GameBoardComponent implements OnInit, AfterViewInit{
   switchToSingle(){
     this.showNewGameModal = false;
     this.selectedMode = 0;
+  }
+  private handlePuzzleMoves(move?){
+    if(this.currentPuzzleMoveCount === this.puzzleMoves.length){
+      console.log('Nice')
+      this.currentPuzzleMoveCount = 0;
+      if(!this.userData['playerPuzzleIncorrect']?.includes(this.puzzleId) && !this.userData['playerPuzzleIncorrect'].includes(this.puzzleId)){
+        this.userData['playerPuzzleCorrect'].push(this.puzzleId)
+        this.userData['playerPuzzleRating'] = this.stockFishService.updateSolverRating(1,this.userData['playerPuzzleCorrect'].length+this.userData['playerPuzzleIncorrect'].length).toFixed(0)
+        this.correct = true
+      }
+      else{
+        this.correct = false
+        this.userData['playerPuzzleRating'] = this.stockFishService.updateSolverRating(0,this.userData['playerPuzzleCorrect'].length+this.userData['playerPuzzleIncorrect'].length).toFixed(0)
+      }
+      this.triggerAnimation()
+      setTimeout(() => {
+        this.stockFishService.setUserDataObject(this.userData)
+      }, 1000);
+      return
+    }
+    else{
+      if(this.currentPuzzleMoveCount%2 === 0){
+        this.board.move(this.puzzleMoves[this.currentPuzzleMoveCount])
+        this.currentPuzzleMoveCount++;
+      }
+      else{
+        if(this.puzzleMoves[this.currentPuzzleMoveCount] === move){
+          this.currentPuzzleMoveCount++;
+          setTimeout(() => {
+            this.handlePuzzleMoves()
+          }, 1000);
+        }
+        else{
+          if(!this.userData['playerPuzzleIncorrect'].includes(this.puzzleId)){
+            this.userData['playerPuzzleIncorrect'].push(this.puzzleId)
+          }
+          console.log("Incorrect Move")
+          this.userData['playerPuzzleRating'] = this.stockFishService.updateSolverRating(1,this.userData['playerPuzzleCorrect'].length+this.userData['playerPuzzleIncorrect'].length).toFixed(0)
+          setTimeout(() => {
+            this.board.undo();
+          }, 1000);
+        }
+      }
+    }
+  }
+  triggerAnimation(){
+    this.showResultPuzzle = true
+    setTimeout(() => {
+      this.showResultPuzzle = false
+    }, 2000);
   }
 }

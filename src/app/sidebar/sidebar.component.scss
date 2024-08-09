@@ -78,3 +78,12 @@ $secondaryColor: #EDFBC1;
     cursor: pointer;
     transform: rotateY(180deg)
 }
+.sidemenu-container{
+    background-color: rgba(217, 217, 217, 0.65);
+    width: 100dvw;
+    height: 100dvh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+}

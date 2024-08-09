@@ -142,3 +142,13 @@ $secondaryColor: #EDFBC1;
     margin-bottom: 10px;
     width: 100%;
 }
+.puzzle-heading-container{
+    @include flexBox(row,space-around);
+    background-color: $primaryColor;
+    @extend .button-defaults;
+    width:15dvw;
+    font-size: 24px;
+    color: #ffffff;
+    transform: rotateX(0deg);
+    backface-visibility: hidden;
+}

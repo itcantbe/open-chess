@@ -33,6 +33,19 @@ export class StockfishService implements OnInit{
 
   private loadedFEN$ = new BehaviorSubject<string>(null);
   public _loadedFEN$ = this.loadedFEN$.asObservable();
+
+  private loadedPuzzle$ = new BehaviorSubject<string>(null);
+  public _loadedPuzzle$ = this.loadedPuzzle$.asObservable();
+
+  private userData$ = new BehaviorSubject<string>(null);
+  public _userData$ = this.userData$.asObservable();
+
+  private userRating = 0;
+  private userDeviationRating = 0;
+  private problemRating = 0;
+  private problemDeviationRating = 0;
+  private previousVariance = 0
+  private previousRatingFactor = 0;
   private computerMove = '';
 
   constructor() {
@@ -143,11 +156,13 @@ export class StockfishService implements OnInit{
     if(!this.evaluator){
       return
     }
-    let chess = new Chess(fen)
+    let chess = new Chess()
+    chess.load(fen)
     let rec = this.recommendation$.getValue()?.match(/(bestmove) ([a-h][1-8])([a-h][1-8])([qrbn]?)/)
     
-    let newPostion = chess.fen()
-    if(chess.moves().includes(rec[3])){
+    let newPostion = ''
+    let possibleMoves= chess.moves()
+    if(possibleMoves.includes(rec[3])){
       if(rec){
         chess.move({
           from:rec[2],
@@ -194,5 +209,59 @@ export class StockfishService implements OnInit{
     if(validateFen(value)){
       this.loadedFEN$.next(value)
     }
+  }
+  public setPuzleObject(value){
+    this.currentGame.load(value.FEN)
+    this.problemRating = value.Rating
+    this.problemDeviationRating = value.RatingDeviation
+    this.loadedPuzzle$.next(value)
+  }
+  public setUserDataObject(value){
+    this.userRating = Number(value.playerPuzzleRating) || 0;
+    this.userData$.next(value)
+    document.cookie = JSON.stringify(value)
+  }
+
+  //Glicko Rating System
+  private calculateRatingDeviationFunction(){
+    return (1/Math.sqrt(1 + (3*(this.userDeviationRating**2 + this.problemDeviationRating**2)/(Math.PI**2))))
+  }
+  private calculateProbabityOfSolution(){
+    return 1/(1+Math.exp((this.problemRating - this.userRating)*-(this.calculateRatingDeviationFunction())))
+  }
+  private calculateVariance(){
+    let newVariance = 1/(this.calculateRatingDeviationFunction()**2)*this.calculateProbabityOfSolution()*(1-this.calculateProbabityOfSolution())
+    let currentVariance = newVariance + this.previousVariance
+    this.previousVariance = currentVariance
+    return currentVariance
+  }
+  public updateSolverRating(val:number,problemCount){
+    if(this.userRating === 0){
+      this.userRating = 800
+      this.userDeviationRating = 0
+    }else{
+      if(problemCount>10){
+        this.userDeviationRating = 20
+      }
+      else{
+        this.userDeviationRating +=2*problemCount
+      }
+    }
+    let variance = this.calculateVariance()
+    let deviationShrinkage = 0.5
+
+    let varianceConstant = variance/variance+(deviationShrinkage**2)
+    
+    let newRatingFactor = (val-this.calculateProbabityOfSolution())*(this.problemRating*this.calculateRatingDeviationFunction())
+    if(!(val === 1 && this.previousRatingFactor>0)){
+      this.previousRatingFactor = 0
+    }
+    if(!(val === 0 && this.previousRatingFactor<0)){
+      this.previousRatingFactor = 0
+    }
+    let currentFactor = newRatingFactor+this.previousRatingFactor
+    this.previousRatingFactor = currentFactor
+
+    return this.userRating + varianceConstant*currentFactor
   }
 }

@@ -1,5 +1,5 @@
 <app-sidebar (selectedIndex)="selectedMenuItem($event)"></app-sidebar>
-<app-display [showDisplayBoard]="showDisplayBoard" (displayBoardClosed)="displayBoardClosed()"></app-display>
+<app-display [showDisplayBoard]="showDisplayBoard" (displayBoardClosed)="displayBoardClosed()" #displayComp></app-display>
 <router-outlet></router-outlet>
 <app-history ></app-history>
 <!-- @if(showHistorySection){

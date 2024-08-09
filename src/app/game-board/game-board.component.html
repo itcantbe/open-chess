@@ -1,16 +1,27 @@
 <div class="board-container" #container>
 
-    @if(!isPGNgame){
+    @if(!isPGNgame && !isPuzzles){
         <div class="button-group-container">
             <div class="member" [class.selected-button]="selectedMode === 0" (click)="changeMode(0)">Two Player</div>
             <div class="member" [class.selected-button]="selectedMode === 1" (click)="changeMode(1)">Play Computer</div>
         </div>
     }
-    @else{
+    @else if(isPGNgame){
         <div class="pgn-players-container">
             <span class="pgn-name">{{PGNgameHeader['White']}}</span>
             <span class="pgn-name">V/s</span>
             <span class="pgn-name">{{PGNgameHeader['Black']}}</span>
+        </div>
+    }
+    @else if(isPuzzles){
+        <div class="puzzle-heading-container" @onOff *ngIf="!showResultPuzzle">
+            <span style="margin: 10px;">{{'Puzzles'}}</span>
+        </div>
+        <div class="puzzle-heading-container" @onOff *ngIf="showResultPuzzle && correct" style="background-color: #EDFBC1; color: black;">
+            <span style="margin: 10px;">{{'Correct'}}</span>
+        </div>
+        <div class="puzzle-heading-container" @onOff *ngIf="showResultPuzzle && !correct" style="background-color: #EE3949;">
+            <span style="margin: 10px;">{{'Incorrect'}}</span>
         </div>
     }
 
@@ -32,14 +43,14 @@
             (moveChange)="logEvent($event)"
             >
         </ngx-chess-board>
-    @if(!isPGNgame){
+    @if(!isPGNgame && !isPuzzles){
         <div class="eval-container">
             <span class="eval-points">{{evalValue}}</span>
             <span class="eval-bar" [class.fliped]="isReversed"></span>
             <span class="eval-pointer"[style.top]="evalPointerPosition()"></span>
         </div>
     }   
-    @else{
+    @else if(isPGNgame){
         <div class="pgn-details-container">
             <div class="detail-container">
                 <span>Event</span><span>{{PGNgameHeader['Event']}}</span>
@@ -73,6 +84,7 @@
             </div>
         </div>
     }
+    
     </div>
 
 <div class="navigation-button-container">

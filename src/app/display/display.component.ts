@@ -1,9 +1,14 @@
+interface puzzle{
+  ID:number,FEN,Moves,Rating:number,RatingDeviation:number
+}
+
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, output } from '@angular/core';
 import { IndexedDbService } from '../indexed-db.service';
 import { StockfishService } from '../stockfish.service';
 import { BehaviorSubject, distinct, distinctUntilChanged, tap } from 'rxjs';
 import { ModalComponent } from '../modal/modal.component';
+import { HttpService } from '../http-service.service';
 
 @Component({
   selector: 'app-display',
@@ -12,7 +17,7 @@ import { ModalComponent } from '../modal/modal.component';
   templateUrl: './display.component.html',
   styleUrl: './display.component.scss'
 })
-export class DisplayComponent {
+export class DisplayComponent implements OnInit{
   
 
   @Input() public showDisplayBoard: boolean = false;
@@ -27,16 +32,46 @@ export class DisplayComponent {
   public previousGameOnly = false;
   public showGameListModal = false;
 
-  constructor(private indexdbService:IndexedDbService,private stockfishService:StockfishService){
+  public importMode = false; 
+  public puzzleMode = false; 
+
+  public puzzleDataArray =[]
+
+  public puzzleConfig = {
+    autoMove:true,
+    saveData:true
   }
 
+  public playerRating = null;
+  public playerData = null;
+  public puzzleRating = null;
+  public nextToMove = null;
+  public showHint = false;
+  public movesArray = [];
+  constructor(private indexdbService:IndexedDbService,private stockfishService:StockfishService,private httpService: HttpService){
+  }
+  ngOnInit(): void {
+    this.stockfishService._userData$.pipe(
+      tap((value)=>{
+        if(value){
+          this.playerData = value;
+          if(this.puzzleConfig.autoMove){
+            this.launchPuzzleMode(value)
+            this.showHint = false;
+          }
+        }
+        console.log(value)
+      })
+    ).subscribe()
+  }
   public closeDisplayBoard(){
+    this.importMode = false;
+    this.puzzleMode = false;
     this.showDisplayBoard = false;
     this.displayBoardClosed.emit()
   }
   public async fileUploadEvent(event){
     //event.target.files[0]
-    console.log('here')
     this.newAddGameArray = []
     this.fileName = event.target.files[0].name
     let reader = new FileReader();
@@ -95,7 +130,6 @@ export class DisplayComponent {
   }
 
   public loadSelectedGame(index){
-    console.log(index)
     let PGNstring = this.gameArray.at(index)
     this.stockfishService.setPGNgame(PGNstring.slice(PGNstring.indexOf('[')))
   }
@@ -170,7 +204,6 @@ export class DisplayComponent {
         if(value){
           this.processedData = value;
           this.convertDataToPGN();
-          console.log(value[0])
         }
       })
     ).subscribe();
@@ -221,7 +254,131 @@ export class DisplayComponent {
     this.showGameListModal = false;
   }
   public loadFENstring(value){
-    this.stockfishService.setFENstring(value.target.value)
-    
+    this.stockfishService.setFENstring(value.target.value)   
+  }
+  public loadAllPuzzleData(){
+    this.httpService.getAllPuzzles().pipe(
+     tap((value)=>{
+       const view = new Uint8Array(value);
+       let chunkSize = 293
+       for (let offset = 0; offset < view.length; offset += chunkSize) {
+         // Create a subarray for the current chunk
+         const chunk = view.slice(offset, offset + chunkSize);
+         
+         // Process the chunk
+         this.processPuzzleChunk(chunk);
+       }
+       let processChunks = 10000;
+       let offset =0;
+       this.indexdbService.setPuzzlesinDB(this.puzzleDataArray.slice(offset, offset + processChunks))
+       this.indexdbService._requestComplete$.pipe(
+        distinctUntilChanged(),
+        tap((value)=>{
+          if(value === true){
+            offset +=processChunks
+            this.indexdbService.setPuzzlesinDB(this.puzzleDataArray.slice(offset, offset + processChunks))
+            console.log('called for '+ offset)
+          }
+        })
+       ).subscribe()
+       /* let processChunks =100
+       for(let offset = 0; offset+processChunks < this.puzzleDataArray.length; offset += processChunks){
+         this.indexdbService.setPuzzlesinDB(this.puzzleDataArray.slice(offset, offset + chunkSize))
+       } */
+       /* setPuzzlesinDB */
+     })
+    ).subscribe();
+   }
+   private async processPuzzleChunk(chunk){
+     let decoder = new TextDecoder
+     this.processData += decoder.decode(chunk)
+     let arr = this.processData.split(/,|\r\n/)
+     this.processData =  arr.pop()
+     let count = -1
+     let data = {} as puzzle;
+     if(this.puzzleDataArray.length>0){
+       count = Object.keys(this.puzzleDataArray[this.puzzleDataArray.length-1]).length -1
+       data = this.puzzleDataArray[this.puzzleDataArray.length-1]
+     }
+     for(let i of arr){
+       count++;
+       switch(count){
+         case 0:
+           data.ID = Number(i);
+           break;
+         case 1:
+           data.FEN = i;
+           break;
+         case 2:
+           data.Moves = i;
+           break;
+         case 3:
+           data.Rating = Number(i);
+           break;
+          case 4:
+            data.RatingDeviation = Number(i);
+            count = -1;
+            data = {} as puzzle;
+            this.puzzleDataArray.push((data))
+            break;
+       }
+     }
+   }
+  public getAllPuzzleData(){
+    /* this.displayComp.loadAllPuzzleData() */
+    this.indexdbService.getPuzzlesFromDB();
+    this.indexdbService._requestComplete$.pipe(
+      distinctUntilChanged(),
+      tap((value)=>{
+        if(value === false){
+          this.loadAllPuzzleData()
+        }
+        else{
+         console.log('existing Data Found') 
+        }
+      })
+    ).subscribe()
+    this.indexdbService._oldGameData$.pipe(
+      distinctUntilChanged(),
+      tap((value)=>{
+        if(value){
+          this.puzzleDataArray = value;
+          /* this.dataPatternInPuzzle(); */
+        }
+      })
+    ).subscribe();
+  }
+  /* dataPatternInPuzzle(){
+    let RatingMap = new Set()
+    let NoOfMoves = new Set()
+
+  } */
+  launchPuzzleMode(playerData){
+    let leng = 0
+    this.playerRating = Number(playerData['playerPuzzleRating']) || 800
+    leng = playerData['playerPuzzleIncorrect'].length+playerData['playerPuzzleCorrect'].length
+    let possibleValue = this.puzzleDataArray.filter((value)=>{
+      if((value.Rating)>this.playerRating && (value.Rating)<this.playerRating+50){
+        return value
+      }
+    })
+    let index = Math.round(Math.random()*possibleValue.length)
+    this.puzzleRating = possibleValue[index]['Rating']
+    this.nextToMove = possibleValue[index]['FEN'].split(' ')[1]
+    this.movesArray = possibleValue[index]['Moves'].split(' ')
+    this.stockfishService.setPuzleObject(possibleValue[index])
+  }
+  storePlayerData(){
+    let playerData = {};
+    if(document.cookie === ''){
+      playerData['playerPuzzleRating'] = 0
+      playerData['playerPuzzleCorrect'] = []
+      playerData['playerPuzzleIncorrect'] = []
+      document.cookie = JSON.stringify(playerData)
+    }
+    else{
+      playerData = JSON.parse(document.cookie)
+    }
+    this.stockfishService.setUserDataObject(playerData)
   }
 }

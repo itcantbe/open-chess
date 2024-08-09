@@ -1,52 +1,123 @@
-<div class="display-board-container" *ngIf="showDisplayBoard">
-    <div class="display-board-heading">
-        <span>
-            Import Data
-        </span>
-        <span class="close-icon" (click)="closeDisplayBoard()"></span>
-    </div>
-    <div class="display-board-text-container">
-        <span class="display-board-text">Import PGN File : </span>
-        <div class="display-board-file-upload" (click)="PGNupload.click()">Choose File</div>
-        <input type="file" style="display:none" #PGNupload accept=".pgn" (change)="fileUploadEvent($event)"/>
-    </div>
-    <div class="display-board-text-container" *ngIf="gameArray.length!==0 && !previousGameOnly">
-        <span class="display-board-text">Loaded File Name : </span>
-        <div class="display-board-file-upload">{{fileName}}</div>
-    </div>
-    <div class="display-board-text-container" *ngIf="gameArray.length!==0">
-        <span class="display-board-text">Total Games : </span>
-        <div class="display-board-file-upload">{{gameArray.length}}</div>
-    </div>
-    <div class="display-board-text-container" *ngIf="gameArray.length!==0">
-        <span class="display-board-text">ALL Games List : </span>
-        <div class="display-board-file-upload" (click)="openFullListPopup()">{{'Full List'}}</div>
-    </div>
-    <div class="display-board-scrollbox" *ngIf="gameArray.length!==0">
-        <table style="color: black; text-align: center;padding: 10px;">
-            <tr>
-                <th>S.No.</th>
-                <th>Event</th>
-                <th>Date</th>
-                <th>Round</th>
-            </tr>
-            @for(game of processedData; track game.Id; let index = $index){
-                <tr style="cursor: pointer;" (click)="loadSelectedGame(index)">
-                    <td>{{index+1}}</td>
-                    <td>{{game.Event}}</td>
-                    <td>{{game.Date | date:'dd/MM/YY'}}</td>
-                    <td>{{game.Round}}</td>
-                </tr>
-            }
-        </table>
-    </div>
-    <div class="display-board-text-container">
-        <span class="display-board-text">Get Previously Imported Games : </span>
-        <div class="display-board-file-upload" (click)="getALLPreviousGames()">{{'Import'}}</div>
-    </div>
-    <div class="display-board-text-container">
-        <span class="display-board-text">Load FEN String : </span>
-        <input class="fen-input" (change)="loadFENstring($event)"/>
-    </div>
-</div>
-<app-modal *ngIf="showGameListModal" [showGameListModal] = "showGameListModal" [gameList]="processedData" (gameScreenClosed)="closedPopup($event)" (gameSelected)="loadSelectedGame($event); showGameListModal = false"></app-modal>
+@if(showDisplayBoard){
+
+    @if(importMode){
+        <div class="display-board-container">
+            <div class="display-board-heading">
+                <span>
+                    Import Data
+                </span>
+                <span class="close-icon" (click)="closeDisplayBoard()"></span>
+            </div>
+            <div class="display-board-text-container">
+                <span class="display-board-text">Import PGN File : </span>
+                <div class="display-board-file-upload" (click)="PGNupload.click()">Choose File</div>
+                <input type="file" style="display:none" #PGNupload accept=".pgn" (change)="fileUploadEvent($event)"/>
+            </div>
+            <div class="display-board-text-container" *ngIf="gameArray.length!==0 && !previousGameOnly">
+                <span class="display-board-text">Loaded File Name : </span>
+                <div class="display-board-file-upload">{{fileName}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="gameArray.length!==0">
+                <span class="display-board-text">Total Games : </span>
+                <div class="display-board-file-upload">{{gameArray.length}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="gameArray.length!==0">
+                <span class="display-board-text">ALL Games List : </span>
+                <div class="display-board-file-upload" (click)="openFullListPopup()">{{'Full List'}}</div>
+            </div>
+            <div class="display-board-scrollbox" *ngIf="gameArray.length!==0">
+                <table style="color: black; text-align: center;padding: 10px;">
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Round</th>
+                    </tr>
+                    @for(game of processedData; track game.Id; let index = $index){
+                        <tr style="cursor: pointer;" (click)="loadSelectedGame(index)">
+                            <td>{{index+1}}</td>
+                            <td>{{game.Event}}</td>
+                            <td>{{game.Date | date:'dd/MM/YY'}}</td>
+                            <td>{{game.Round}}</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="display-board-text-container">
+                <span class="display-board-text">Get Previously Imported Games : </span>
+                <div class="display-board-file-upload" (click)="getALLPreviousGames()">{{'Import'}}</div>
+            </div>
+            <div class="display-board-text-container">
+                <span class="display-board-text">Load FEN String : </span>
+                <input class="fen-input" (change)="loadFENstring($event)"/>
+            </div>
+        </div>
+        <app-modal *ngIf="showGameListModal" [showGameListModal] = "showGameListModal" [gameList]="processedData" (gameScreenClosed)="closedPopup($event)" (gameSelected)="loadSelectedGame($event); showGameListModal = false"></app-modal>
+    }
+    @if(puzzleMode){
+        <div class="display-board-container" [style.top]="puzzleMode? '12%' : '10%'">
+            <div class="display-board-heading">
+                <span>
+                    Puzzle Data
+                </span>
+                <span class="close-icon" (click)="closeDisplayBoard()"></span>
+            </div>
+            <div class="display-board-text-container" *ngIf="puzzleRating">
+                <span class="display-board-text">Next Move :</span>
+                <div class="display-board-file-upload">{{nextToMove === 'w' ? 'Black' : 'White'}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="puzzleDataArray.length>0 && !puzzleRating">
+                <span class="display-board-text">Begin Solving :</span>
+                <div class="display-board-file-upload" (click)="storePlayerData()">{{'Start'}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="puzzleDataArray.length>0">
+                <span class="display-board-text">Automatically Move to Next Puzzle:</span>
+                <div class="">
+                    <label class="toggle-switch" (click)="puzzleConfig.autoMove = !puzzleConfig.autoMove">
+                        <input type="checkbox" [checked]="puzzleConfig.autoMove">
+                        <div class="toggle-switch-background">
+                          <div class="toggle-switch-handle"></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <!-- <div class="display-board-text-container" *ngIf="puzzleDataArray.length>0">
+                <span class="display-board-text">Save Progress Data Locally :</span>
+                <div class="">
+                    <label class="toggle-switch" (click)="puzzleConfig.saveData = !puzzleConfig.saveData">
+                        <input type="checkbox" [checked]="puzzleConfig.saveData">
+                        <div class="toggle-switch-background">
+                          <div class="toggle-switch-handle"></div>
+                        </div>
+                    </label>
+                </div>
+            </div> -->
+            <div class="display-board-text-container" *ngIf="puzzleRating">
+                <span class="display-board-text">User Rating :</span>
+                <div class="display-board-file-upload" >{{playerRating || '-'}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="puzzleRating">
+                <span class="display-board-text">Puzzle Rating :</span>
+                <div class="display-board-file-upload" >{{puzzleRating || '-'}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="puzzleRating">
+                <span class="display-board-text">Next Puzzle :</span>
+                <div class="display-board-file-upload" (click)="launchPuzzleMode(playerData)">{{'Next'}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="puzzleRating">
+                <span class="display-board-text">Show Moves :</span>
+                <div class="display-board-file-upload" (click)="showHint = !showHint">{{'Show'}}</div>
+            </div>
+            <div class="display-board-text-container" *ngIf="puzzleRating && showHint">
+                <div class="moves-container">
+                    @for(move of movesArray; track move){
+                        <div class="display-board-file-upload">{{move}}</div>
+                    }
+                </div>
+            </div>
+            <div class="loader-container">
+                <div class="loader" *ngIf="puzzleDataArray.length===0" style="margin: auto;"></div>
+            </div>
+        </div>
+    }
+}
